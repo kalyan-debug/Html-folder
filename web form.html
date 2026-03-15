@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Feedback Form</title>
+    <style>
+        /* Simple styling to see the effects */
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .field-group { margin-bottom: 15px; }
+        input { padding: 8px; border: 2px solid #ccc; outline: none; transition: 0.3s; }
+        .error { color: #e74c3c; font-size: 0.8rem; display: block; margin-top: 5px; }
+        button { padding: 10px 20px; cursor: pointer; background: #3498db; color: white; border: none; }
+        #confirmMessage { margin-top: 20px; padding: 10px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+
+    <h2>Feedback Form</h2>
+    <form id="feedbackForm">
+        <div class="field-group">
+            <label>Name:</label><br>
+            <input type="text" id="nameInput" placeholder="Enter your name">
+            <span id="nameError" class="error"></span>
+        </div>
+
+        <div class="field-group">
+            <label>Email:</label><br>
+            <input type="email" id="emailInput" placeholder="Enter your email">
+            <span id="emailError" class="error"></span>
+        </div>
+
+        <button type="button" id="submitBtn">Double-Click to Submit</button>
+    </form>
+
+    <div id="confirmMessage" style="display:none;">✅ Feedback Submitted Successfully!</div>
+
+    <script>
+        // --- Reusable Validation Logic ---
+        const validators = {
+            isNotEmpty: (value) => value.trim().length > 0,
+            isValidEmail: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+        };
+
+        const updateUI = (inputEl, errorEl, isValid, message) => {
+            errorEl.textContent = isValid ? "" : message;
+            inputEl.style.borderColor = isValid ? "#2ecc71" : "#e74c3c";
+        };
+
+        // --- Event Handlers ---
+        const handleInput = (e) => {
+            const input = e.target;
+            const errorSpan = document.getElementById(`${input.id.replace('Input', 'Error')}`);
+            
+            if (input.id === "nameInput") {
+                const valid = validators.isNotEmpty(input.value);
+                updateUI(input, errorSpan, valid, "Name cannot be empty");
+            } 
+            else if (input.id === "emailInput") {
+                const valid = validators.isValidEmail(input.value);
+                updateUI(input, errorSpan, valid, "Enter a valid email address");
+            }
+        };
+
+        const toggleHighlight = (e, isEntering) => {
+            e.target.style.backgroundColor = isEntering ? "#f0f8ff" : "#fff";
+        };
+
+        const handleFormSubmit = () => {
+            const name = document.getElementById('nameInput').value;
+            const email = document.getElementById('emailInput').value;
+
+            if (validators.isNotEmpty(name) && validators.isValidEmail(email)) {
+                document.getElementById('confirmMessage').style.display = 'block';
+                document.getElementById('feedbackForm').reset();
+            } else {
+                alert("Please complete the form correctly first!");
+            }
+        };
+
+        // --- Attach Listeners ---
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('keyup', handleInput);
+            input.addEventListener('mouseenter', (e) => toggleHighlight(e, true));
+            input.addEventListener('mouseleave', (e) => toggleHighlight(e, false));
+        });
+
+        document.getElementById('submitBtn').addEventListener('dblclick', handleFormSubmit);
+    </script>
+</body>
+</html>

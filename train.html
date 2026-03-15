@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IRCTC Event Ticket Booking</title>
+
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+    }
+    .container {
+      width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #003366;
+    }
+    label {
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0 10px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #003366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #0055aa;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .summary {
+      background: #eef3ff;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    function EventDetails({ availableTickets }) {
+      return (
+        <div>
+          <h2>Event Details</h2>
+          <p><b>Event Name:</b> IRCTC Technical Seminar</p>
+          <p><b>Department:</b> Computer Science</p>
+          <p><b>Date & Time:</b> 20 Feb 2026, 10:00 AM</p>
+          <p><b>Venue:</b> Main Auditorium</p>
+          <p><b>Ticket Price:</b> ₹200</p>
+          <p><b>Available Tickets:</b> {availableTickets}</p>
+          <hr />
+        </div>
+      );
+    }
+
+    function BookingForm({ availableTickets, onBook }) {
+      const [name, setName] = React.useState("");
+      const [email, setEmail] = React.useState("");
+      const [dept, setDept] = React.useState("");
+      const [tickets, setTickets] = React.useState("");
+      const [error, setError] = React.useState("");
+
+      function handleSubmit(e) {
+        e.preventDefault();
+
+        if (!name || !email || !dept || !tickets) {
+          setError("All fields are mandatory");
+          return;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+          setError("Invalid email format");
+          return;
+        }
+
+        if (tickets <= 0) {
+          setError("Number of tickets must be positive");
+          return;
+        }
+
+        if (tickets > availableTickets) {
+          setError("Not enough tickets available");
+          return;
+        }
+
+        setError("");
+        onBook({ name, tickets });
+        setName("");
+        setEmail("");
+        setDept("");
+        setTickets("");
+      }
+
+      return (
+        <form onSubmit={handleSubmit}>
+          <h2>Book Tickets</h2>
+
+          <label>Name</label>
+          <input value={name} onChange={e => setName(e.target.value)} />
+
+          <label>Email</label>
+          <input value={email} onChange={e => setEmail(e.target.value)} />
+
+          <label>Department</label>
+          <input value={dept} onChange={e => setDept(e.target.value)} />
+
+          <label>Number of Tickets</label>
+          <input type="number" value={tickets} onChange={e => setTickets(e.target.value)} />
+
+          {error && <p className="error">{error}</p>}
+
+          <button type="submit">Book Ticket</button>
+        </form>
+      );
+    }
+
+    function App() {
+      const [availableTickets, setAvailableTickets] = React.useState(50);
+      const [booking, setBooking] = React.useState(null);
+
+      function handleBooking(data) {
+        setAvailableTickets(availableTickets - data.tickets);
+        setBooking({
+          name: data.name,
+          tickets: data.tickets,
+          total: data.tickets * 200
+        });
+      }
+
+      return (
+        <div className="container">
+          <h1>IRCTC Ticket Booking</h1>
+
+          <EventDetails availableTickets={availableTickets} />
+          <BookingForm availableTickets={availableTickets} onBook={handleBooking} />
+
+          {booking && (
+            <div className="summary">
+              <h3 className="success">Booking Confirmed!</h3>
+              <p><b>Name:</b> {booking.name}</p>
+              <p><b>Event:</b> IRCTC Technical Seminar</p>
+              <p><b>Tickets Booked:</b> {booking.tickets}</p>
+              <p><b>Total Amount:</b> ₹{booking.total}</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+  </script>
+</body>
+</html>

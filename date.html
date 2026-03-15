@@ -1,0 +1,44 @@
+<!-- <html>
+<head>
+  <title>JavaScript getMonth Method</title>
+</head>
+<body>
+  <script type ="text/javascript">
+    var dt =new Date();
+    document.write("Month (1-12): " + (dt.getMonth() + 1));
+    </script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+  <title>JavaScript Date and Month</title>
+</head>
+<body>
+  <script type="text/javascript">
+    var dt = new Date();
+
+    var day = dt.getDate();
+
+   
+    var monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    var monthName = monthNames[dt.getMonth()];
+
+    document.write("Date: " + day + " " + monthName);
+  </script>
+</body>
+</html>
